@@ -10,7 +10,7 @@ DIST_DIR  := $(CURDIR)/../dist
 .NOTPARALLEL:
 .PHONY: all
 
-all: ubuntu18.04 ubuntu16.04 ubuntu14.04 debian9 debian8 centos7 amzn2 amzn1
+all: ubuntu18.04 ubuntu16.04 ubuntu14.04 debian9 debian8 centos7 sles12 amzn2 amzn1
 
 ubuntu18.04: $(addsuffix -ubuntu18.04, 18.03.1 17.12.1)
 
@@ -23,6 +23,8 @@ debian9: $(addsuffix -debian9, 18.03.1 18.03.0 17.12.1 17.12.0 17.09.1 17.09.0 1
 debian8: $(addsuffix -debian8, 18.03.1 18.03.0 17.12.1 17.09.1 17.06.2)
 
 centos7: $(addsuffix -centos7, 18.03.1 18.03.0 17.12.1 17.12.0 17.09.1 17.09.0 17.06.2 17.03.2 1.13.1 1.12.6)
+
+sles12: $(addsuffix -sles12, 18.03.1 18.03.0 17.12.1 17.09.1)
 
 amzn2: $(addsuffix -amzn2, 17.06.2)
 
@@ -108,6 +110,19 @@ amzn1: $(addsuffix -amzn1, 18.03.1 17.12.1 17.09.1 17.06.2 17.03.2)
                         --build-arg PKG_REV="$(PKG_REV).docker$*" \
                         -t "nvidia/runtime/centos:7-docker$*" -f Dockerfile.centos .
 	$(DOCKER) run --rm -v $(DIST_DIR)/centos7:/dist:Z "nvidia/runtime/centos:7-docker$*"
+
+%-sles12:
+	runc="$(shell $(MAKE) -s $@-runc)" && \
+	$(DOCKER) build --build-arg VERSION_ID="12" \
+                        --build-arg RUNC_COMMIT="$${runc}" \
+                        --build-arg PKG_VERS="$(VERSION)" \
+                        --build-arg PKG_REV="$(PKG_REV).docker$*" \
+                        --build-arg http_proxy="${http_proxy}" \
+                        --build-arg https_proxy="${https_proxy}" \
+                        --build-arg no_proxy="${no_proxy}" \
+                        --network=host \
+                        -t "nvidia/runtime/sles:12-docker$*" -f Dockerfile.sles .
+	$(DOCKER) run --rm -v $(DIST_DIR)/sles12:/dist:Z "nvidia/runtime/sles:12-docker$*"
 
 %-amzn2:
 	runc="$(shell $(MAKE) -s $@-runc)" && \

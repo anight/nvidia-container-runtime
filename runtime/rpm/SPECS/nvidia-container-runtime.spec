@@ -16,7 +16,7 @@ Source1: LICENSE
 
 Obsoletes: nvidia-container-runtime < 2.0.0
 Requires: nvidia-container-runtime-hook < 2.0.0
-Requires: libseccomp
+Requires: libseccomp2
 
 %description
 Provides a modified version of runc allowing users to run GPU enabled

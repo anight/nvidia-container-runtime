@@ -1,0 +1,46 @@
+ARG VERSION_ID
+FROM nvidia/base/sles:${VERSION_ID}
+
+# Install a more version of git (for vndr)
+#RUN zypper -qn ar https://download.opensuse.org/repositories/devel:/tools:/scm/SLE_12_SP3/devel:tools:scm.repo
+#RUN zypper -qn --gpg-auto-import-keys refresh
+RUN zypper -qn in git pkgconfig gcc libseccomp-devel libselinux-devel
+
+RUN go get github.com/LK4D4/vndr
+
+# runc
+WORKDIR $GOPATH/src/github.com/opencontainers/runc
+
+RUN git clone https://github.com/docker/runc.git . && \
+    git fetch https://github.com/opencontainers/runc.git
+
+# packaging
+ARG PKG_VERS
+ARG PKG_REV
+
+ENV VERSION $PKG_VERS
+ENV RELEASE $PKG_REV
+
+# output directory
+ENV DIST_DIR=/tmp/nvidia-container-runtime-$PKG_VERS/SOURCES
+RUN mkdir -p $DIST_DIR
+
+ARG RUNC_COMMIT
+COPY runc/$RUNC_COMMIT/ /tmp/patches/runc
+
+RUN git checkout $RUNC_COMMIT && \
+    git apply /tmp/patches/runc/* && \
+    if [ -f vendor.conf ]; then vndr; fi && \
+    make BUILDTAGS="seccomp selinux" && \
+    mv runc $DIST_DIR/nvidia-container-runtime
+
+WORKDIR $DIST_DIR/..
+COPY rpm .
+
+CMD arch=$(uname -m) && \
+    rpmbuild --clean --target=$arch -bb \
+             -D "_topdir $PWD" \
+             -D "version $VERSION" \
+             -D "release $RELEASE" \
+             SPECS/nvidia-container-runtime.spec && \
+    mv RPMS/$arch/*.rpm /dist
