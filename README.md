@@ -41,6 +41,8 @@ sudo yum install nvidia-container-runtime
 
 ## Docker Engine setup
 
+**Do not follow this section if you installed the `nvidia-docker2` package, it already registers the runtime.**
+
 To register the `nvidia` runtime, use the method below that is best suited to your environment.  
 You might need to merge the new argument with your existing configuration.
 
@@ -119,6 +121,7 @@ A logical expression to define constraints on the configurations supported by th
 * `cuda`: constraint on the CUDA driver version.
 * `driver`: constraint on the driver version.
 * `arch`: constraint on the compute architectures of the selected GPUs.
+* `brand`: constraint on the brand of the selected GPUs (e.g. GeForce, Tesla, GRID).
 
 #### Expressions
 Multiple constraints can be expressed in a single environment variable: space-separated constraints are ORed, comma-separated constraints are ANDed.  
