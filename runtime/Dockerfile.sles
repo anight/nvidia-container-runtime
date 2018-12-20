@@ -4,7 +4,7 @@ FROM nvidia/base/sles:${VERSION_ID}
 # Install a more version of git (for vndr)
 #RUN zypper -qn ar https://download.opensuse.org/repositories/devel:/tools:/scm/SLE_12_SP3/devel:tools:scm.repo
 #RUN zypper -qn --gpg-auto-import-keys refresh
-RUN zypper -qn in git pkgconfig gcc libseccomp-devel libselinux-devel
+RUN zypper -qn in git pkgconfig gcc libseccomp-devel libselinux-devel libapparmor-devel
 
 RUN go get github.com/LK4D4/vndr
 
@@ -31,7 +31,7 @@ COPY runc/$RUNC_COMMIT/ /tmp/patches/runc
 RUN git checkout $RUNC_COMMIT && \
     git apply /tmp/patches/runc/* && \
     if [ -f vendor.conf ]; then vndr; fi && \
-    make BUILDTAGS="seccomp selinux" && \
+    make BUILDTAGS="seccomp apparmor selinux" && \
     mv runc $DIST_DIR/nvidia-container-runtime
 
 WORKDIR $DIST_DIR/..

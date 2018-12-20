@@ -35,7 +35,7 @@ centos%: $(CURDIR)/Dockerfile.centos
 sles%: $(CURDIR)/Dockerfile.sles
 	$(DOCKER) build --build-arg VERSION_ID="$*" \
 	                --build-arg PKG_VERS="$(VERSION)" \
-	                --build-arg PKG_REV="$(PKG_REV)" \
+	                --build-arg PKG_REV="2" \
 	                --build-arg http_proxy="${http_proxy}" \
 	                --build-arg https_proxy="${https_proxy}" \
 	                --build-arg no_proxy="${no_proxy}" \

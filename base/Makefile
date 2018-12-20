@@ -25,7 +25,7 @@ centos%: $(CURDIR)/Dockerfile.centos
 	                -t "nvidia/base/centos:$*" -f Dockerfile.centos .
 
 sles%: $(CURDIR)/Dockerfile.sles
-	$(DOCKER) build --build-arg VERSION_ID="2.0.2-with-repos" \
+	$(DOCKER) build --build-arg VERSION_ID="latest" \
 	                --build-arg GOLANG_VERSION="$(GOLANG_VERSION)" \
 	                --build-arg http_proxy="${http_proxy}" \
 	                --build-arg https_proxy="${https_proxy}" \
